@@ -1,0 +1,10 @@
+the floor kissed the president .
+(ROOT  (S  (NP  (Det  the) (Noun  floor)) (VP  (V1  kissed) (NP  (Det  the) (Noun  president)))) .)
+is it true that the floor sighed ?
+(ROOT  is it true that (S  (NP  (Det  the) (Noun  floor)) (VP  (V0  sighed))) ?)
+a pickled president is eating the pickle !
+(ROOT  (S  (NP  (Det  a) (Noun  (Adj  pickled) (Noun  president))) (VP  (V1  is eating) (NP  (Det  the) (Noun  pickle)))) !)
+is it true that the president understood that the pickle kissed ?
+(ROOT  is it true that (S  (NP  (Det  the) (Noun  president)) (VP  (Vthat  understood) that (S  (NP  (Det  the) (Noun  pickle)) (VP  (V0  kissed))))) ?)
+Sally is delicious .
+(ROOT  (S  (NP  (NNP  Sally)) (VP  is (Adj  delicious))) .)

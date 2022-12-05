@@ -1,0 +1,78 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+5	ROOT	S . # We increase the probability of the rule that rewrite sentence with '.' in the end.
+1	ROOT	S !
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+
+1	S	NP VP
+
+# To make the sentences shorter, we changed the weights of the rules that generate pre-terminals.
+5	VP	Verb NP
+10	NP	Det Noun
+1	NP	NP PP
+5	PP	Prep NP
+
+# To increase the probability of generating an adjective, we balanced the weights of the Noun rewriting rules.
+5	Noun	Adj Noun
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+# we increase the weights of more common terminals over less common terminals.
+
+5	Verb	ate
+5	Verb	wanted
+3	Verb	kissed
+3	Verb	understood
+1	Verb	pickled
+
+2	Det	the
+2	Det	a
+1	Det	every
+
+2	Noun	president
+2	Noun	sandwich
+1	Noun	pickle
+2	Noun	chief of staff
+2	Noun	floor
+
+5	Adj	fine
+3	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in

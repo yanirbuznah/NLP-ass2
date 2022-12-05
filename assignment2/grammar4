@@ -1,0 +1,380 @@
+# a f
+
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+5	ROOT	S .
+1	ROOT	S !
+1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+#    Adj = adjective
+# 	 Prob = pronoun
+# 	 VBZ = Verb (3rd person singular present)
+
+
+1	S	NP VP
+5	VP	V1 NP
+4   VP  V0
+5	NP	Det Noun
+1	NP	NP PP
+1	PP	Prep NP
+2	Noun	Adj Noun
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+
+
+10	Det	the
+1	Det	every
+
+2	Noun	president
+2	Noun	sandwich
+1	Noun	pickle
+2	Noun	chief of staff
+2	Noun	floor
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	perplexed
+1	Adj	pickled
+
+1	Prep	with
+1	Prep	on
+1	Prep	under
+1	Prep	in
+
+10  CC    and
+1  CC    or
+
+
+# -------------------------------
+# (a) Sally ate a sandwich .
+# ROOT => (S .) => (NP VP .) => (NNP VP .) => (Sally VP .) => (Sally V1 NP .) => (Sally ate NP .) => (Sally ate Det Noun .) => (Sally ate a Noun .) => (Sally ate a sandwich .)
+1   NP	NNP
+1   NNP Sally
+
+
+# (b) Sally and the president wanted and ate a sandwich .
+# ROOT => (S .) => (NP VP .) => (NP CC NP VP .) => (NNP CC NP VP .) => (Sally CC NP VP .) => (Sally and NP VP .) => (Sally and Det Noun VP .) => (Sally and the Noun VP .) =>
+# (Sally and the president VP .) =>  (Sally and the president V1 NP .) => (Sally and the president V1 CC V1 NP .) => (Sally and the president wanted CC V1 NP .) =>
+# (Sally and the president wanted and V1 NP .) => (Sally and the president wanted and ate NP .) => (Sally and the president wanted and ate Det Noun .) =>
+# (Sally and the president wanted and ate a Noun .) => (Sally and the president wanted and ate a sandwich .)
+0.1   NP		NP CC NP
+0.1   V1      V1 CC V1
+
+
+
+# (c) the president sighed .
+# ROOT => (S .) => (NP VP .) => (Det Noun VP .) => (the Noun VP .) => (the president VP .) => (the president V0 .) => (the president sighed .)
+1	V0	sighed
+
+# (d) the president thought that a sandwich sighed .
+# ROOT => (S .) => (NP VP .) => (Det Noun VP .) =>  (the Noun VP .) =>  (the president VP .) =>  (the president Vthat that S .) => (the president thought that S .) =>
+# (the president thought that NP VP .) => (the president thought that Det Noun VP .) => (the president thought that a Noun VP .) =>
+# (the president thought that a sandwich VP .) => (the president thought that a sandwich V0 .) => (the president thought that a sandwich sighed .)
+1   VP      Vthat that S
+
+
+1   Vthat   thought
+1   Vthat   said
+1   Vthat   saw
+1   Vthat   understood
+
+
+
+# (e) it perplexed the president that a sandwich ate Sally .
+# ROOT => (S .) => (NP VP .) => (Pron VP .) => (it VP .) => (it V6 NP that S .) =>  (it perplexed NP that S .) => (it perplexed Det Noun that S .) =>  (it perplexed the Noun that S .) =>
+# (it perplexed the president that S .) => (it perplexed the president that NP VP .) =>
+# (it perplexed the president that Det Noun VP .) => (it perplexed the president that a Noun VP .) => (it perplexed the president that a sandwich VP .) =>
+# (it perplexed the president that a sandwich V1 NP .) => (it perplexed the president that a sandwich ate NP .) => (it perplexed the president that a sandwich ate NNP .) =>
+# (it perplexed the president that a sandwich ate Sally .)
+1	Pron	it
+0.1 NP		Pron
+0.1 VP      V6 NP that S
+1	V6	    perplexed
+
+# (f) the very very very perplexed president ate a sandwich .
+# ROOT => (S .) => (NP VP .) => (Det Noun VP .) => (the Noun VP .) => (the RB Adj Noun VP .) => (the RB RB Adj Noun VP .) => (the RB RB RB Adj Noun VP .) => (the very RB RB Adj Noun VP .) =>
+# (the very very RB Adj Noun VP .) => (the very very very Adj Noun VP .) => (the very very very perplexed Noun VP .) =>
+# (the very very very perplexed president VP .) => (the very very very perplexed president V1 NP .) => (the very very very perplexed president ate NP .) =>
+# (the very very very perplexed president ate Det Noun .) => (the very very very perplexed president ate a Noun .) => (the very very very perplexed president ate a sandwich .)
+
+
+1   RB very
+1   RB   RB RB
+0.1   Noun RB Adj Noun
+
+
+
+# (g) the president worked on every proposal on the desk .
+# ROOT => (S .) => (NP VP .) => (Det Noun VP .) => (the Noun VP .) => (the president VP .) => (the president VBD PP PP .) => (the president worked PP PP .) => (the president worked Prep NP PP .) =>
+# (the president worked Prep NP PP.) => (the president worked on NP PP.) => (the president worked on Det Noun PP .) =>
+# (the president worked on every Noun PP .) => (the president worked on every proposal PP .) => (the president worked on every proposal Prep NP .) =>
+# (the president worked on every proposal on NP .) => (the president worked on every proposal on Det Noun .) => (the president worked on every proposal on the Noun .) =>
+# (the president worked on every proposal on the desk .)
+1	VBD 	worked
+1	VP		VBD PP PP
+1	Noun	proposal
+1	Noun	desk
+
+# (h) Sally is lazy .
+# ROOT => (S .) => (NP VP .) => (NNP VP .) => (Sally VP .) => (Sally is Adj .) => (Sally is lazy .)
+1   VP      is Adj
+1	Adj		lazy
+
+# (i) Sally is eating a sandwich .
+# ROOT => (S .) => (NP VP .) => (NNP VP .) => (Sally VP .) => (Sally VP .) => (Sally V1 NP .) => (Sally is eating NP .) => (Sally is eating Det Noun .) => (Sally is eating a Noun .) =>
+# (Sally is eating a sandwich .)
+1	V1	is eating
+
+# (j) the president thought that sally is a sandwich .
+# ROOT => (S .) => (NP VP .) => (Det Noun VP .) =>  (the Noun VP .) =>  (the president VP .) => (the president Vthat that S .) => (the president thought that S.) =>
+# (the president thought that NP VP .) => (the president thought that NNP VP .) => (the president thought that Sally VP .) =>
+# (the president thought that Sally V1 NP .) => (the president thought that Sally is NP .) => (the president thought that Sally is Det Noun .) => (the president thought that Sally is a Noun .) =>
+# (the president thought that Sally is a sandwich .)
+1   V1      is
+
+
+
+
+
+
+
+
+#(a) a Vs an
+
+# for example, a very ambivalent apple is a sandwich.
+# ROOT => (S .) => (NP VP .) => (SINGLE_NP VP .) => (a   CONSONANT VP .) => (a RB_CONSONANT Adj Noun VP .) => (a very Adj Noun VP .) => (a very ambivalent Noun VP .) => (a very ambivalent apple VP.)
+# (a very ambivalent apple VP.) => (a very ambivalent apple V1 NP .) => (a very ambivalent apple is NP .) => (a very ambivalent apple is Det Noun .) => (a very ambivalent apple is a Noun .) => (a very ambivalent apple is a sandwich .)
+
+1   NP  SINGLE_NP
+
+
+1   SINGLE_NP   a   CONSONANT
+1   SINGLE_NP   an  VOWEL
+
+1   CONSONANT   ADJ_CONSONANT Noun
+1   CONSONANT   RB_CONSONANT Adj Noun
+1   CONSONANT   NOUN_CONSONANT
+
+
+1   VOWEL   ADJ_VOWEL Noun
+1   VOWEL   RB_VOWEL Adj Noun
+1   VOWEL   NOUN_VOWEL
+
+1   ADJ_CONSONANT   pickled
+1   ADJ_CONSONANT   lazy
+1   ADJ_CONSONANT   perplexed
+
+
+1   ADJ_VOWEL   adorable
+1   ADJ_VOWEL   average
+1   ADJ_VOWEL   elegant
+1   ADJ_VOWEL   ambivalent
+
+
+1   RB_CONSONANT   RB_CONSONANT RB
+1   RB_CONSONANT   very
+1   RB_CONSONANT   slightly
+
+
+0.1   RB_VOWEL   RB_VOWEL RB
+1   RB_VOWEL   always
+1   RB_VOWEL   almost
+
+1   NOUN_CONSONANT  president
+1   NOUN_CONSONANT  floor
+1   NOUN_CONSONANT  chief of staff
+1   NOUN_CONSONANT  balloon
+1   NOUN_CONSONANT  sandwich
+1   NOUN_CONSONANT  desk
+1   NOUN_CONSONANT  proposal
+1   NOUN_CONSONANT  dog
+
+
+1   NOUN_VOWEL  apple
+1   NOUN_VOWEL  orange
+1   NOUN_VOWEL  angel
+1   NOUN_VOWEL  elephant
+
+
+1   Noun NOUN_VOWEL
+1   Noun NOUN_CONSONANT
+1   Adj ADJ_CONSONANT
+1   Adj ADJ_VOWEL
+
+1   RB  slightly
+
+
+
+
+# (f) Tense and Aspects
+# To implement new words, add 5 of its forms (present simple, past simple,future simple, perfect and progressive)
+
+#the president has been eating a sandwich
+
+# ROOT => (S .) => (NP VP .) => (the Noun VP .) => (the president VP .) => (the president V1 NP .)
+
+
+
+# ROOT => (S .) => (NP VP .) => (the Noun V0 .) => (the president V0 .) => (the president PRESENT_TENSE .) => (the president has PERFECT_PROGRESSIVE .)
+# => (the president has been PROGRESSIVE .) => (the president has been eating .)
+
+
+
+1   V0 will V0_FUTURE_TENSE
+1   V0_FUTURE_TENSE   V0_SIMPLE_FUTURE
+1   V0_FUTURE_TENSE   have V0_PERFECT
+1   V0_FUTURE_TENSE   be V0_PROGRESSIVE
+1   V0_FUTURE_TENSE   have V0_PERFECT_PROGRESSIVE
+
+
+1   V0  V0_PAST_TENSE
+1   V0_PAST_TENSE   V0_SIMPLE_PAST
+1   V0_PAST_TENSE   had V0_PERFECT
+1   V0_PAST_TENSE   was V0_PROGRESSIVE
+1   V0_PAST_TENSE   had V0_PERFECT_PROGRESSIVE
+
+
+1   V0  V0_PRESENT_TENSE
+1   V0_PRESENT_TENSE   V0_SIMPLE_PRESENT
+1   V0_PRESENT_TENSE   has V0_PERFECT
+1   V0_PRESENT_TENSE   is V0_PROGRESSIVE
+1   V0_PRESENT_TENSE   has V0_PERFECT_PROGRESSIVE
+
+1   V0_PERFECT_PROGRESSIVE been V0_PROGRESSIVE
+
+#V0 vocabulary for every tense and aspect
+
+1   V0_SIMPLE_PRESENT  eats
+1   V0_SIMPLE_PRESENT  goes
+1   V0_SIMPLE_PRESENT  walks
+1   V0_SIMPLE_PRESENT  pickles
+1   V0_SIMPLE_PRESENT  swims
+
+
+1   V0_SIMPLE_PAST     ate
+1   V0_SIMPLE_PAST     went
+1   V0_SIMPLE_PAST     walked
+1   V0_SIMPLE_PAST     pickled
+1   V0_SIMPLE_PAST     swam
+
+1   V0_SIMPLE_FUTURE   eat
+1   V0_SIMPLE_FUTURE   go
+1   V0_SIMPLE_FUTURE   walk
+1   V0_SIMPLE_FUTURE   pickle
+1   V0_SIMPLE_FUTURE   swim
+
+
+1   V0_PERFECT eaten
+1   V0_PERFECT gone
+1   V0_PERFECT walked
+1   V0_PERFECT pickled
+1   V0_PERFECT swam
+
+
+
+1   V0_PROGRESSIVE   eating
+1   V0_PROGRESSIVE   going
+1   V0_PROGRESSIVE   walking
+1   V0_PROGRESSIVE   pickling
+1   V0_PROGRESSIVE   swimming
+
+
+
+
+
+1   V1 will V1_FUTURE_TENSE
+1   V1_FUTURE_TENSE   V1_SIMPLE_FUTURE
+1   V1_FUTURE_TENSE   have V1_PERFECT
+1   V1_FUTURE_TENSE   be V1_PROGRESSIVE
+1   V1_FUTURE_TENSE   have V1_PERFECT_PROGRESSIVE
+
+
+1   V1  V1_PAST_TENSE
+1   V1_PAST_TENSE   V1_SIMPLE_PAST
+1   V1_PAST_TENSE   had V1_PERFECT
+1   V1_PAST_TENSE   was V1_PROGRESSIVE
+1   V1_PAST_TENSE   had V1_PERFECT_PROGRESSIVE
+
+
+1   V1  V1_PRESENT_TENSE
+1   V1_PRESENT_TENSE   V1_SIMPLE_PRESENT
+1   V1_PRESENT_TENSE   has V1_PERFECT
+1   V1_PRESENT_TENSE   is V1_PROGRESSIVE
+1   V1_PRESENT_TENSE   has V1_PERFECT_PROGRESSIVE
+
+1   V1_PERFECT_PROGRESSIVE been V1_PROGRESSIVE
+
+
+#V1 vocabulary for every tense and aspect
+
+1   V1_SIMPLE_PRESENT  eats
+1   V1_SIMPLE_PRESENT  pickles
+1   V1_SIMPLE_PRESENT  says
+1   V1_SIMPLE_PRESENT  likes
+1   V1_SIMPLE_PRESENT  wants
+1   V1_SIMPLE_PRESENT  kisses
+
+
+1   V1_SIMPLE_PAST     ate
+1   V1_SIMPLE_PAST     pickled
+1   V1_SIMPLE_PAST     said
+1   V1_SIMPLE_PAST     liked
+1   V1_SIMPLE_PAST     wanted
+1   V1_SIMPLE_PAST     kissed
+
+1   V1_SIMPLE_FUTURE   eat
+1   V1_SIMPLE_FUTURE   pickle
+1   V1_SIMPLE_FUTURE   say
+1   V1_SIMPLE_FUTURE   like
+1   V1_SIMPLE_FUTURE   want
+1   V1_SIMPLE_FUTURE   kiss
+
+
+1   V1_PERFECT eaten
+1   V1_PERFECT pickled
+1   V1_PERFECT said
+1   V1_PERFECT liked
+1   V1_PERFECT wanted
+1   V1_PERFECT kissed
+
+
+1   V1_PROGRESSIVE   eating
+1   V1_PROGRESSIVE   pickling
+1   V1_PROGRESSIVE   saying
+1   V1_PROGRESSIVE   liking
+1   V1_PROGRESSIVE   wanting
+1   V1_PROGRESSIVE   kissing
+
+
+
